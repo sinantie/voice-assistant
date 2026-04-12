@@ -8,6 +8,7 @@ import math
 from audio import load_wav, write_wav
 from models import get_stt_model
 from tts import synthesize
+from llm import run_llm
 
 app = FastAPI(title="ZeroGPU Voice Assistant (v0)")
 
@@ -62,17 +63,26 @@ async def speech_to_speech(
             beam_size=5,
         )
 
-    text = "".join(segment.text for segment in segments).strip()
+    user_text = "".join(segment.text for segment in segments).strip()
     logger.info(
-            f"STT done | time={t_stt.elapsed:.3f}s | text_len={len(text)}"
+            f"STT done | time={t_stt.elapsed:.3f}s | text_len={len(user_text)}"
         )    
 
+    if user_text:
+        # ---- LLM ----
+        with Timer("llm") as t_llm:
+            assistant_text = run_llm(user_text)
+
+        logger.info(
+            f"LLM done | time={t_llm.elapsed:.3f}s | "
+            f"chars={len(assistant_text)}"
+        )
+    else:
+        assistant_text = "I did not hear anything."
+
     # --- TTS ---    
-    if not text:
-        text = "I did not hear anything."
-    
     with Timer("tts") as t_tts:
-        tts_audio, tts_sample_rate = synthesize(text)
+        tts_audio, tts_sample_rate = synthesize(assistant_text)
     duration = len(tts_audio) / tts_sample_rate
 
     logger.info(
@@ -92,7 +102,9 @@ async def speech_to_speech(
         content=wav_bytes,
         media_type="audio/wav",
         headers={
-            "X-Transcript": text,
+            "X-User-Text": user_text,
+            "X-Assistant-Text": assistant_text,
+            "X-Sample-Rate": str(tts_sample_rate),
             "X-Language": info.language,
         },
     )
