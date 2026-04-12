@@ -1,0 +1,17 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart
+
+# Speech-to-Text dependencies
+faster-whisper>=1.0.0
+ctranslate2>=4.2
+
+numpy
+soundfile
+
+torch
+
+# TTS dependencies
+melotts @ git+https://github.com/andimarafioti/MeloTTS.git
+pocket-tts @ git+https://github.com/kyutai-labs/pocket-tts.git
+
