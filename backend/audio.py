@@ -1,5 +1,6 @@
 import io
 import numpy as np
+from scipy.signal import resample_poly
 import soundfile as sf
 from fastapi import HTTPException
 
@@ -40,10 +41,26 @@ def write_wav(
     Encode mono PCM16 WAV and return bytes.
     """
     buf = io.BytesIO()
+    if sample_rate != EXPECTED_SR:
+        print(f"Resampling from {sample_rate} Hz to {EXPECTED_SR} Hz")
+
+        print(
+            EXPECTED_SR, sample_rate
+        )
+
+        samples = resample_poly(
+            samples,
+            EXPECTED_SR,
+            sample_rate,
+        )
+        samples = np.clip(samples, -1.0, 1.0)
+        samples = (samples * 32767.0).astype(np.int16)
+
+
     sf.write(
         buf,
         samples,
-        samplerate=sample_rate,
+        samplerate=EXPECTED_SR,
         subtype="PCM_16",
         format="WAV",
     )

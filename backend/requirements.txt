@@ -13,5 +13,5 @@ torch
 
 # TTS dependencies
 melotts @ git+https://github.com/andimarafioti/MeloTTS.git
-pocket-tts @ git+https://github.com/kyutai-labs/pocket-tts.git
+git+https://github.com/kyutai-labs/pocket-tts.git
 

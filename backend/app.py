@@ -42,8 +42,8 @@ async def speech_to_speech(
     # --- Real TTS ---    
     if not text:
             text = "I did not hear anything."
-    tts_audio = synthesize(text)
-    wav_bytes = write_wav(tts_audio)
+    tts_audio, tts_sample_rate = synthesize(text)
+    wav_bytes = write_wav(tts_audio, sample_rate=tts_sample_rate)
 
     return Response(
         content=wav_bytes,
