@@ -1,6 +1,6 @@
 import logging
 import time
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import Response
 import numpy as np
 import math
@@ -8,7 +8,7 @@ import math
 from audio import load_wav, write_wav
 from models import get_stt_model
 from tts import synthesize
-from llm import run_llm
+from llm.base import run_llm
 
 app = FastAPI(title="ZeroGPU Voice Assistant (v0)")
 
