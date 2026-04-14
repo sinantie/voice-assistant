@@ -22,12 +22,12 @@ def _get_model():
 
 def synthesize(text: str) -> tuple[np.ndarray, int]:
     """
-    Returns PCM16 mono @ 16 kHz
+    Returns PCM16 mono @ 24 kHz
     """
     model = _get_model()
 
     audio = model.generate_audio(_voice_state, text)  # expected float32 [-1, 1]
     
-    audio = audio.numpy() if isinstance(audio, torch.Tensor) else audio
+    audio = audio.numpy()
     audio = np.clip(audio, -1.0, 1.0)
-    return audio, 24000  # Pocket TTS outputs at 24 kHz, resampling will be needed in audio.py
+    return audio, 24000  # Pocket TTS outputs at 24 kHz, resampling might be needed in audio.py

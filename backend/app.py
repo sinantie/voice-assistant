@@ -1,6 +1,6 @@
 import logging
 import time
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, WebSocket
 from fastapi.responses import Response
 import numpy as np
 import math
@@ -9,6 +9,7 @@ from audio import load_wav, write_wav
 from models import get_stt_model
 from tts import synthesize
 from llm.base import run_llm
+from ws import websocket_handler
 
 app = FastAPI(title="ZeroGPU Voice Assistant (v0)")
 
@@ -39,6 +40,11 @@ def generate_beep(
     waveform = 0.3 * np.sin(2 * math.pi * freq_hz * t)
     return np.int16(waveform * 32767)
 
+
+@app.websocket("/ws")
+async def ws_endpoint(ws: WebSocket):
+    await websocket_handler(ws)
+    
 
 @app.post("/speech_to_speech")
 async def speech_to_speech(

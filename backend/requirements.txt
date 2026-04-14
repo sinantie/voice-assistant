@@ -1,8 +1,12 @@
 fastapi>=0.110
 uvicorn[standard]>=0.27
 python-multipart
+websockets
 
-# Speech-to-Text dependencies
+# VAD dependencies
+silero-vad
+
+# STT dependencies
 faster-whisper>=1.0.0
 ctranslate2>=4.2
 
