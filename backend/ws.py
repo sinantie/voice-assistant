@@ -2,9 +2,10 @@ import os
 import logging
 import numpy as np
 from fastapi import WebSocket
-from audio import resample_audio
+from audio import resample_audio, write_wav
 from tts.pocket import synthesize
 from vad import is_speech  # expects 16 kHz float32
+import soundfile as sf
 
 from collections import deque
 import json
@@ -47,8 +48,8 @@ async def handle_utterance(ws, utterance: np.ndarray, connected: bool):
     })
 
     # ---- TTS ----
-    pcm16, sr = synthesize(text)  # sr should be 24000
-
+    audio, sr = synthesize(text)  # sr should be 24000
+    pcm16 = (audio * 32767.0).astype(np.int16) # convert to PCM16
     FRAME_SAMPLES = 240  # 10 ms @ 24kHz
     idx = 0
     while idx + FRAME_SAMPLES <= len(pcm16):

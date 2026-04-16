@@ -5,7 +5,6 @@ import soundfile as sf
 import json
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 from pathlib import Path
-
 # ---------------- config ----------------
 
 WS_URL = "ws://127.0.0.1:8000/ws"

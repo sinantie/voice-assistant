@@ -1,22 +1,27 @@
-import torch
+import os
+
+import logging
 import numpy as np
-from pocket_tts import TTSModel  # adjust if path differs
+from pocket_tts import TTSModel, export_model_state  # adjust if path differs
 
 _model = None
 _voice_state = None
 
+logger = logging.getLogger("voice-assistant")
 
 def _get_model():
     global _model, _voice_state
     # if _model is None:
     #     device = "cuda" if torch.cuda.is_available() else "cpu"
     _model = TTSModel.load_model()
-    _voice_state = _model.get_state_for_audio_prompt(
-        "alba"  # One of the pre-made voices, see above
-        # You can also use any voice file you have locally or from Hugging Face:
-        # "./some_audio.wav"
-        # or "hf://kyutai/tts-voices/expresso/ex01-ex02_default_001_channel2_198s.wav"
-    )
+    if os.path.exists("./alba.safetensors"):
+        logger.info("Loading voice state from cache")
+        _voice_state = _model.get_state_for_audio_prompt("./alba.safetensors")
+    else:
+        _voice_state = _model.get_state_for_audio_prompt(
+            "alba" 
+        )
+        export_model_state(_voice_state, "./alba.safetensors")
     return _model
 
 

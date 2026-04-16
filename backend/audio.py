@@ -4,7 +4,9 @@ import numpy as np
 from scipy.signal import resample_poly
 import soundfile as sf
 from fastapi import HTTPException
+import logging
 
+logger = logging.getLogger("voice-assistant")
 
 EXPECTED_SR = int(os.getenv("SAMPLE_RATE", 24000))
 
@@ -47,7 +49,7 @@ def write_wav(
     # resample if necessary
     samples = resample_audio(samples, sample_rate, EXPECTED_SR)
 
-    samples = (samples * 32767.0).astype(np.int16)
+    samples = (samples * 32767.0).astype(np.int16) # convert to PCM16
 
 
     sf.write(
@@ -64,6 +66,6 @@ def resample_audio(samples: np.ndarray, orig_sr: int, target_sr: int) -> np.ndar
     if orig_sr == target_sr:
         return samples
 
-    print(f"Resampling from {orig_sr} Hz to {target_sr} Hz")
+    logger.debug(f"Resampling from {orig_sr} Hz to {target_sr} Hz")
     resampled = resample_poly(samples, target_sr, orig_sr)
     return np.clip(resampled, -1.0, 1.0)
